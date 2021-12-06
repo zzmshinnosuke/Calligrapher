@@ -116,6 +116,37 @@ function drawCurrentPath() {
     return lines;
 }*/
 
+canvas.ontouchstart =  function(event) {
+	// console.log("start");
+    mouseDown = true;
+    currentPath = [];
+};
+canvas.ontouchend = function(event) {
+	// console.log("end");
+    mouseDown = false;
+    points = currentPath;
+    
+    var curves = fitStroke(points);
+    //var curves = [leastSquaresFit(points)]; //reparameterize testing
+    
+    strokes.push(new Stroke(curves));
+    //strokes[0]=new Stroke(curves); //reparameterize testing
+    
+    update();
+};
+canvas.ontouchmove = function(event) {
+	// console.log("move" + event.changedTouches[0].clientX+" "+event.changedTouches[0].clientY);
+    var mousePos = [event.changedTouches[0].clientX,event.changedTouches[0].clientY];
+    if(mouseDown) {      
+        if(currentPath.length != 0) {
+            if(getDist(mousePos,currentPath[currentPath.length-1])>=MIN_MOUSE_DIST)
+                currentPath.push(mousePos);
+            drawCurrentPath();
+        } else
+            currentPath.push(mousePos);
+    } 
+};
+
 canvas.onmousedown = function(event) {
     mouseDown = true;
     currentPath = [];
@@ -164,6 +195,19 @@ keydown = function(event) {
 window.addEventListener("keydown",keydown,true);
 
 update();
+
+//移动端手绘,阻止页面拖动
+document.body.addEventListener('touchmove', function (e) {
+    e.preventDefault();
+}, { passive: false }); 
+
+document.oncontextmenu = function(){
+    return false;
+}
+
+document.onselectstart = function(){
+    return false;
+}
 
 /*for(var i = 1; i<= 9; i++) {
     var x = 100+i*50;
