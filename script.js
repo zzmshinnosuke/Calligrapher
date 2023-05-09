@@ -3,20 +3,10 @@ var canvas = document.getElementById('canvas'),
     height = canvas.height,
     context = canvas.getContext("2d");
 
-function drawCircle(x,y,r,ctx) {
-    ctx.beginPath();
-    ctx.arc(x,y,r, 0, 2*Math.PI,false);
-    //ctx.fill();
-    ctx.stroke();
-}
-
-function drawLine(x0,y0,x1,y1,ctx) {
-    ctx.beginPath();
-    ctx.moveTo(x0,y0);
-    ctx.lineTo(x1,y1);
-    ctx.stroke();
-}
-
+var canvas_new = document.getElementById('canvas_new'),
+    width_new = canvas_new.width,
+    height_new = canvas_new.height,
+    context_new = canvas_new.getContext("2d");
 
 //FIXME REORGANIZE EBERYTING
 //--- constants ---//
@@ -45,7 +35,29 @@ currentPath = [];
 errPoint = [];
 mouseDown = false;
 
+function wordSizeChange(){
+    var wordSizeSelect = document.getElementById("wordSize");
+    var index = wordSizeSelect.selectedIndex;
+    var value = wordSizeSelect.options[index].value;
+    WEIGHT = value;
+    if(value==-1){
+        WEIGHT = 15;
+    }
+}
 
+function drawCircle(x,y,r,ctx) {
+    ctx.beginPath();
+    ctx.arc(x,y,r, 0, 2*Math.PI,false);
+    //ctx.fill();
+    ctx.stroke();
+}
+
+function drawLine(x0,y0,x1,y1,ctx) {
+    ctx.beginPath();
+    ctx.moveTo(x0,y0);
+    ctx.lineTo(x1,y1);
+    ctx.stroke();
+}
 
 function setDebug(name,t) {
     DEBUG[name] = t;
@@ -58,22 +70,16 @@ function toggleDebug(name) {
 function drawUI() {
     context.strokeStyle = "rgb(55,55,55)";
     context.strokeRect(0,0,width,height);
-    
-    /*var squareX = width/2-SQUARE_SIZE/2,
-        squareY = height/2-SQUARE_SIZE/2;
-    context.lineWidth = 2;
-    context.strokeRect(squareX,squareY,SQUARE_SIZE,SQUARE_SIZE);
-    context.lineWidth = 1;
-    context.strokeRect(squareX+SQUARE_SIZE/3,squareY,SQUARE_SIZE/3,SQUARE_SIZE);
-    context.strokeRect(squareX,squareY+SQUARE_SIZE/3,SQUARE_SIZE,SQUARE_SIZE/3);
-    context.strokestyle = "rgb(0,0,0,0)";*/
+
+    context_new.strokeStyle = "rgb(55,55,55)";
+    context_new.strokeRect(0,0,width,height);
 }
 
 function update() {
-    context.clearRect(0,0,width,height);
+    // context.clearRect(0,0,width,height);
     drawUI();
     for(var i = 0; i<strokes.length; i++)
-        strokes[i].draw(WEIGHT,context);
+        strokes[i].draw(WEIGHT,context_new);
     
     if(DEBUG.DRAW_POINTS) { 
         context.globalCompositeOperation = "xor";
@@ -135,7 +141,6 @@ canvas.ontouchend = function(event) {
     update();
 };
 canvas.ontouchmove = function(event) {
-	// console.log("move" + event.changedTouches[0].clientX+" "+event.changedTouches[0].clientY);
     var mousePos = [event.changedTouches[0].clientX,event.changedTouches[0].clientY];
     if(mouseDown) {      
         if(currentPath.length != 0) {
@@ -157,10 +162,8 @@ canvas.onmouseup = function(event) {
     points = currentPath;
     
     var curves = fitStroke(points);
-    //var curves = [leastSquaresFit(points)]; //reparameterize testing
     
     strokes.push(new Stroke(curves));
-    //strokes[0]=new Stroke(curves); //reparameterize testing
     
     update();
 };
@@ -175,12 +178,7 @@ canvas.onmousemove = function(event) {
             drawCurrentPath();
         } else
             currentPath.push(mousePos);
-    } /*else {
-        var ang = getAngle(sub([300,300],mousePos));
-        update();
-        c = setArmAngles(0,ang);
-        drawCorner(c,[300,300],0,10,context);
-    }*/ 
+    } 
 };
 
 keydown = function(event) {
@@ -208,8 +206,3 @@ document.oncontextmenu = function(){
 document.onselectstart = function(){
     return false;
 }
-
-/*for(var i = 1; i<= 9; i++) {
-    var x = 100+i*50;
-    drawCorner(this["C"+i],[x,100],0,2,context);
-}*/

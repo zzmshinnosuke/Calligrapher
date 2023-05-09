@@ -15,10 +15,21 @@
 </head>
 <body>
   <div>
-    <canvas id="canvas" width="800" height="600">
-        </canvas>
+    <canvas id="canvas" width="400" height="600"></canvas>
+    <canvas id="canvas_new" width="400" height="600"></canvas>
+    </br>
+    <select id="wordSize" onchange="wordSizeChange()">
+      <option value="-1">字号</option>
+      <option value="1">1</option>
+      <option value="3">3</option>
+      <option value="5">5</option>
+      <option value="7">7</option>
+      <option value="10">10</option>
+      <option value="15">15</option>
+      <option value="20">20</option>
+      <option value="25">25</option>
+    </select>
   </div>
-  
   <script src="script.js"></script>
 </body>
 </html>
